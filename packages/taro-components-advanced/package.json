@@ -1,6 +1,6 @@
 {
   "name": "@tarojs/components-advanced",
-  "version": "3.6.29-harmony-hybrid-alpha.21",
+  "version": "3.6.29-harmony-hybrid-alpha.22",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

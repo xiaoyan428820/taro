@@ -1,6 +1,6 @@
 {
   "name": "postcss-plugin-constparse",
-  "version": "3.6.29-harmony-hybrid-alpha.21",
+  "version": "3.6.29-harmony-hybrid-alpha.22",
   "description": "parse constants defined in config",
   "main": "index.js",
   "author": "Simba",
