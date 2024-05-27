@@ -552,7 +552,8 @@
     "chooseLicensePlate": false,
     "chooseLocation": {
       "object": {
-        "mapOpts": true
+        "latitude": true,
+        "longitude": true
       },
       "success": {
         "address": true,
@@ -1325,7 +1326,12 @@
     },
     "navigateBack": false,
     "navigateBackMiniProgram": false,
-    "navigateTo": false,
+    "navigateTo": {
+      "object": {
+        "url": true,
+        "events": true
+      }
+    },
     "navigateToBookshelf": false,
     "navigateToMiniProgram": {
       "object": {
