@@ -20,6 +20,7 @@ export default class Index extends React.Component {
           url: 'http://192.168.43.232:3000/hello',
           dataType: 'json',
           method: 'POST',
+          timeout: 10000,
           data: { name: 'Taro' },
           headers: {
             'Content-Type': 'application/json',
