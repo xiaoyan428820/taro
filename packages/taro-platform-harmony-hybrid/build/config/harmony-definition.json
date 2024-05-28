@@ -1326,7 +1326,12 @@
     },
     "navigateBack": false,
     "navigateBackMiniProgram": false,
-    "navigateTo": false,
+    "navigateTo": {
+      "object": {
+        "url": true,
+        "events": true
+      }
+    },
     "navigateToBookshelf": false,
     "navigateToMiniProgram": {
       "object": {
