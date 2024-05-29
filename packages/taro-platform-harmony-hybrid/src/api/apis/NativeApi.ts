@@ -1,3 +1,6 @@
+// import {timeLog} from "./NativeApiLog";
+import { syncApiCache } from './harmony-native/ApiCache'
+import { storageCacheAndSyncProxy } from './harmony-native/StorageCacheAndSyncProxy'
 import { NativeDataChangeListener, SyncCacheProxyHandler } from './NativeApiSyncCacheProxy'
 // @ts-ignore
 const syncAndRelease = window.MethodChannel && window.MethodChannel.jsBridgeMode({ isAsync: false, autoRelease: true }) || (target => target)
@@ -11,7 +14,7 @@ const asyncAndNotRelease = window.MethodChannel && window.MethodChannel.jsBridge
 // export let judgeUseAxios = false
 export class NativeApi {
   // @ts-ignore
-  @(syncAndNotRelease)
+  @(asyncAndNotRelease)
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   registerNativeListener (listener: NativeDataChangeListener | null): void {
@@ -29,11 +32,9 @@ export class NativeApi {
     return options
   }
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getWindowInfo (): any {
-    return ''
-  }
+  getWindowInfo (): any {}
 
   // @ts-ignore
   @(syncAndRelease)
@@ -41,29 +42,21 @@ export class NativeApi {
     return ''
   }
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getSystemInfoSync (): any {
-    return ''
-  }
+  getSystemInfoSync (): any {}
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getSystemSetting (): any {
-    return ''
-  }
+  getSystemSetting (): any {}
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getAppBaseInfo (): any {
-    return ''
-  }
+  getAppBaseInfo (): any {}
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getAppAuthorizeSetting (): any {
-    return ''
-  }
+  getAppAuthorizeSetting (): any {}
 
   // @ts-ignore
   @(syncAndRelease)
@@ -77,11 +70,9 @@ export class NativeApi {
     return options
   }
 
-  // @ts-ignore
+  @syncApiCache()
   @(syncAndRelease)
-  getMenuButtonBoundingClientRect (): any {
-    return ''
-  }
+  getMenuButtonBoundingClientRect (): any {}
 
   // @ts-ignore
   @(syncAndRelease)
@@ -574,41 +565,52 @@ export class NativeApi {
   }
 
   // @ts-ignore
-  @(syncAndRelease)
-  getExecStatus (option: any): any {
-    // 获取缓存数据
-    return option
-  }
+  // @(syncAndRelease)
+  // getExecStatus (option: any): any {
+  //   // 获取缓存数据
+  //   return option
+  // }
 
-  // @ts-ignore
   @(asyncAndNotRelease)
-  setStorage (option: any): any {
-    return option
-  }
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setStorage (option: any): any {}
+
+  @(asyncAndRelease)
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  removeStorage (option: any): any {}
 
   // @ts-ignore
   @(asyncAndRelease)
-  removeStorage (option: any): any {
-    return option
-  }
-
   // @ts-ignore
-  @(asyncAndRelease)
-  getStorage (option: any): any {
-    return option
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getStorage (option: any): any {}
 
+  @(syncAndRelease)
   // @ts-ignore
-  @(asyncAndRelease)
-  getStorageInfo (option: any): any {
-    return option
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getStorageSync (key): any {}
 
-  // @ts-ignore
   @(asyncAndRelease)
-  clearStorage (option: any): any {
-    return option
-  }
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  batchGetPageShowDataStorage (options: any): any {}
+
+  @(asyncAndRelease)
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  updatePageShowDataKeys (options: any): any {}
+
+  @(asyncAndRelease)
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getStorageInfo (option: any): any {}
+
+  @(asyncAndRelease)
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  clearStorage (option: any): any {}
 
   @(syncAndRelease)
   callInstance (option: any): any {
@@ -637,81 +639,39 @@ export interface Status {
   errorMsg: string
 }
 
-class CacheStorageProxy {
-  private cacheMap: Map<any, any>
-  private readonly nativeApi: NativeApi
-  private readonly asyncToSyncProxy: any
 
-  constructor (nativeApi: NativeApi) {
-    this.nativeApi = nativeApi
-    this.cacheMap = new Map<string, any>()
-    this.asyncToSyncProxy = new Proxy(nativeApi, new AsyncToSyncProxy(this.nativeApi))
-  }
 
-  // @ts-ignore
-  get (target: { [x: string]: any }, prop: string) {
-    if (prop === 'getStorageSync') {
-      return (...args: any[]) => {
-        const key = args[0].key
-        if (this.cacheMap.has(key)) {
-          return this.cacheMap.get(key)
-        } else {
-          const status = this.asyncToSyncProxy.getStorageSync({ key })
-          if (status.done && status.errorMsg === '') {
-            this.cacheMap.set(key, status)
-          }
-          return status
-        }
-      }
-    }
-    if (prop === 'setStorageSync') {
-      return (...args: any[]) => {
-        const { key, data } = args[0]
-        const status = this.asyncToSyncProxy.setStorageSync({ key, data })
-        if (status.done && status.errorMsg === '') {
-          status.data = data
-          this.cacheMap.set(key, status)
-        }
-        return status
-      }
-    }
-    return (...args: any[]) => {
-      return this.asyncToSyncProxy[prop](...args)
-    }
-  }
-}
-
-class AsyncToSyncProxy {
-  private readonly nativeApi: NativeApi
-  private readonly STATUS: Status = { done: false, data: '', errorMsg: `search timeout` }
-  private methods = ['setStorageSync', 'removeStorageSync', 'getStorageSync', 'getStorageInfoSync', 'clearStorageSync']
-
-  constructor (nativeApi: NativeApi) {
-    this.nativeApi = nativeApi
-  }
-
-  get (target: { [x: string]: any }, prop: string) {
-    if (this.methods.includes(prop)) {
-      return (...args: any[]) => {
-        const asyncFunc = prop.substring(0, prop.length - 'Sync'.length)
-        this.nativeApi[asyncFunc](...args)
-
-        let count = 0
-        while (count < 20000) {
-          count++
-          if (count % 2000 === 0) {
-            const status = this.nativeApi.getExecStatus({ method: prop, key: args[0].key })
-            if (status.done || status.errorMsg) {
-              return status
-            }
-          }
-        }
-        return this.STATUS
-      }
-    }
-    return target[prop]
-  }
-}
+// class AsyncToSyncProxy {
+//   private readonly nativeApi: NativeApi
+//   private readonly STATUS: Status = { done: false, data: '', errorMsg: `search timeout` }
+//   private methods = ['setStorageSync', 'removeStorageSync', 'getStorageSync', 'getStorageInfoSync', 'clearStorageSync']
+//
+//   constructor (nativeApi: NativeApi) {
+//     this.nativeApi = nativeApi
+//   }
+//
+//   get (target: { [x: string]: any }, prop: string) {
+//     if (this.methods.includes(prop)) {
+//       return (...args: any[]) => {
+//         const asyncFunc = prop.substring(0, prop.length - 'Sync'.length)
+//         this.nativeApi[asyncFunc](...args)
+//
+//         let count = 0
+//         while (count < 20000) {
+//           count++
+//           if (count % 2000 === 0) {
+//             const status = this.nativeApi.getExecStatus({ method: prop, key: args[0].key })
+//             if (status.done || status.errorMsg) {
+//               return status
+//             }
+//           }
+//         }
+//         return this.STATUS
+//       }
+//     }
+//     return target[prop]
+//   }
+// }
 
 // class HybridProxy {
 //   // private readonly useAxios: boolean
@@ -740,7 +700,9 @@ class AsyncToSyncProxy {
 //   }
 // }
 
-const nativeApi = new NativeApi()
-const cacheNativeApi = new Proxy(nativeApi, new SyncCacheProxyHandler(nativeApi))
-const native = new Proxy(cacheNativeApi, new CacheStorageProxy(cacheNativeApi)) // 第一个false是默认走jsb，true是走纯js， 第二个false是不走osChannel
+let native = new NativeApi()
+// native = timeLog(native)
+native = new Proxy(native, new SyncCacheProxyHandler(native))
+native = storageCacheAndSyncProxy(native)
+
 export default native
