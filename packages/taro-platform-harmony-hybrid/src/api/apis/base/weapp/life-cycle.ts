@@ -38,16 +38,10 @@ function getCustomLaunchInfo () {
   return launchInfo
 }
 
-let launchOptions: Taro.getLaunchOptionsSync.LaunchOptions = {
-  path: '',
-  query: {},
-  scene: 0,
-  shareTicket: '',
-  referrerInfo: {}
-};
-export function initLaunchOptions(options = {}) {
-  Object.assign(launchOptions, getCustomLaunchInfo());
-  Object.assign(launchOptions, options);
+let launchOptions
+export function initLaunchOptions (options = {}) {
+  Object.assign(options, getCustomLaunchInfo())
+  launchOptions = options
 }
 
 /**
