@@ -1,6 +1,6 @@
 {
   "name": "@tarojs/webpack-runner",
-  "version": "3.6.29-harmony-hybrid-alpha.27",
+  "version": "3.6.29-harmony-hybrid-alpha.28",
   "description": "webpack runner for taro",
   "main": "index.js",
   "scripts": {
