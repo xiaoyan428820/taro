@@ -1318,7 +1318,11 @@
         "phoneNumber": true
       }
     },
-    "navigateBack": false,
+    "navigateBack": {
+      "object": {
+        "delta": true
+      }
+    },
     "navigateBackMiniProgram": false,
     "navigateTo": {
       "object": {
@@ -1327,13 +1331,7 @@
       }
     },
     "navigateToBookshelf": false,
-    "navigateToMiniProgram": {
-      "object": {
-        "appId": true,
-        "path": true,
-        "extraData": true
-      }
-    },
+    "navigateToMiniProgram": false,
     "nextTick": true,
     "notifyBLECharacteristicValueChange": {
       "object": {
@@ -1621,7 +1619,11 @@
       }
     },
     "queryBookshelf": false,
-    "reLaunch": false,
+    "reLaunch": {
+      "object": {
+        "url": true
+      }
+    },
     "readBLECharacteristicValue": {
       "object": {
         "characteristicId": true,
@@ -1629,7 +1631,11 @@
         "serviceId": true
       }
     },
-    "redirectTo": false,
+    "redirectTo": {
+      "object": {
+        "url": true
+      }
+    },
     "removeSavedFile": {
       "object": {
         "filePath": true
@@ -1985,7 +1991,11 @@
     "stopWifi": true,
     "subscribeService": false,
     "subscribeVoIPVideoMembers": false,
-    "switchTab": false,
+    "switchTab": {
+      "object": {
+        "url": true
+      }
+    },
     "tradePay": false,
     "unsubscribeMessage": false,
     "updateBookshelfReadTime": false,
